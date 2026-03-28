@@ -84,7 +84,7 @@ builder.register((b) =>
 
 ```typescript
 // Error format
-CircularDependencyError: "Circular dependency detected: A -> B -> C -> A";
+CircularDependencyError: 'Circular dependency detected: A -> B -> C -> A';
 ```
 
 **Files to Modify:**
@@ -105,8 +105,8 @@ CircularDependencyError: "Circular dependency detected: A -> B -> C -> A";
 
 ```typescript
 // Register multiple handlers
-builder.register((b) => b.bind(EventHandler).to(LoggingHandler).asSingleton());
-builder.register((b) => b.bind(EventHandler).to(MetricsHandler).asSingleton());
+builder.register(b => b.bind(EventHandler).to(LoggingHandler).asSingleton());
+builder.register(b => b.bind(EventHandler).to(MetricsHandler).asSingleton());
 
 // Resolve all
 const handlers = container.resolveAll(EventHandler); // [LoggingHandler, MetricsHandler]
@@ -152,7 +152,7 @@ const handlers = container.resolveAll(EventHandler); // [LoggingHandler, Metrics
 ```typescript
 @Injectable({ lifetime: Lifetime.Singleton })
 class DatabaseService {
-  constructor(private logger: Logger) {}
+    constructor(private logger: Logger) {}
 }
 ```
 
@@ -169,10 +169,10 @@ class DatabaseService {
 
 ```typescript
 class Service {
-  constructor(
-    @Inject(CONFIG_TOKEN) private config: Config,
-    @InjectOptional(LOGGER_TOKEN) private logger?: Logger,
-  ) {}
+    constructor(
+        @Inject(CONFIG_TOKEN) private config: Config,
+        @InjectOptional(LOGGER_TOKEN) private logger?: Logger
+    ) {}
 }
 ```
 
@@ -313,30 +313,30 @@ BindingNotFoundError: No binding found for token 'DatabaseService'
 ### Tasks:
 
 1. **Design Async Interface** (Day 1)
-   - Define `resolveAsync()` signature
-   - Design async factory type
-   - Document error handling approach
+    - Define `resolveAsync()` signature
+    - Design async factory type
+    - Document error handling approach
 
 2. **Implement Core Logic** (Day 1-2)
-   - Add async resolution to DependencyContainer
-   - Handle mixed sync/async dependency chains
-   - Add proper Promise caching for Singletons
+    - Add async resolution to DependencyContainer
+    - Handle mixed sync/async dependency chains
+    - Add proper Promise caching for Singletons
 
 3. **Update Binding System** (Day 2)
-   - Support `Factory<T> | AsyncFactory<T>` in Binding
-   - Update BindingBuilder with `toAsyncFactory()`
-   - Validate at build time (no mixing sync/async in same chain if needed)
+    - Support `Factory<T> | AsyncFactory<T>` in Binding
+    - Update BindingBuilder with `toAsyncFactory()`
+    - Validate at build time (no mixing sync/async in same chain if needed)
 
 4. **Test Coverage** (Day 3)
-   - Unit tests for async resolution
-   - Tests for async singleton caching
-   - Tests for error handling in async chains
-   - Integration test with real async service (e.g., database)
+    - Unit tests for async resolution
+    - Tests for async singleton caching
+    - Tests for error handling in async chains
+    - Integration test with real async service (e.g., database)
 
 5. **Documentation** (Day 3)
-   - Update README with async examples
-   - Add async section to API docs
-   - Create async migration guide
+    - Update README with async examples
+    - Add async section to API docs
+    - Create async migration guide
 
 ### Deliverables:
 
@@ -353,18 +353,18 @@ BindingNotFoundError: No binding found for token 'DatabaseService'
 ### Design Decisions:
 
 1. **Explicit vs Implicit Async:**
-   - Decision: Keep `resolve()` sync, add `resolveAsync()` for async
-   - Rationale: Avoids unexpected Promise returns in sync code
-   - Trade-off: Slightly more verbose API
+    - Decision: Keep `resolve()` sync, add `resolveAsync()` for async
+    - Rationale: Avoids unexpected Promise returns in sync code
+    - Trade-off: Slightly more verbose API
 
 2. **Decorator Support Priority:**
-   - Decision: Phase 2, after core features stable
-   - Rationale: Current factory-based API is explicit and testable
-   - Decorators add magic that can hide complexity
+    - Decision: Phase 2, after core features stable
+    - Rationale: Current factory-based API is explicit and testable
+    - Decorators add magic that can hide complexity
 
 3. **Circular Dependency Strategy:**
-   - Decision: Throw error, don't try to auto-resolve
-   - Rationale: Circular deps are design smells; explicit errors force fixes
+    - Decision: Throw error, don't try to auto-resolve
+    - Rationale: Circular deps are design smells; explicit errors force fixes
 
 ### Technical Debt:
 

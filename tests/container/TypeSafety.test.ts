@@ -1,10 +1,10 @@
-import { describe, it, expectTypeOf } from "vitest";
-import { ContainerBuilder } from "../../src/container/ContainerBuilder.js";
+import { describe, it, expectTypeOf } from 'vitest';
+import { ContainerBuilder } from '../../src/container/ContainerBuilder.js';
 
 // Type safety test fixtures
 class UserService {
     getUser(id: string): { id: string; name: string } {
-        return { id, name: "John" };
+        return { id, name: 'John' };
     }
 }
 
@@ -14,12 +14,10 @@ class DatabaseService {
     }
 }
 
-describe("Type Safety", () => {
-    it("should infer correct type when resolving class token", () => {
+describe('Type Safety', () => {
+    it('should infer correct type when resolving class token', () => {
         const builder = new ContainerBuilder();
-        builder.register((b) =>
-            b.bind(UserService).to(UserService).asSingleton()
-        );
+        builder.register(b => b.bind(UserService).to(UserService).asSingleton());
         const container = builder.build();
 
         // TypeScript should infer UserService without explicit generic
@@ -29,18 +27,14 @@ describe("Type Safety", () => {
         expectTypeOf(service).toEqualTypeOf<UserService>();
 
         // Should have access to UserService methods with correct types
-        const user = service.getUser("123");
+        const user = service.getUser('123');
         expectTypeOf(user).toEqualTypeOf<{ id: string; name: string }>();
     });
 
-    it("should infer correct type for different service classes", () => {
+    it('should infer correct type for different service classes', () => {
         const builder = new ContainerBuilder();
-        builder.register((b) =>
-            b.bind(UserService).to(UserService).asSingleton()
-        );
-        builder.register((b) =>
-            b.bind(DatabaseService).to(DatabaseService).asSingleton()
-        );
+        builder.register(b => b.bind(UserService).to(UserService).asSingleton());
+        builder.register(b => b.bind(DatabaseService).to(DatabaseService).asSingleton());
         const container = builder.build();
 
         const userService = container.resolve(UserService);
@@ -55,17 +49,15 @@ describe("Type Safety", () => {
         expectTypeOf(userService).toEqualTypeOf<DatabaseService>();
     });
 
-    it("should work with factory bindings", () => {
+    it('should work with factory bindings', () => {
         const builder = new ContainerBuilder();
 
-        builder.register((b) =>
-            b.bind(DatabaseService).to(DatabaseService).asSingleton()
-        );
+        builder.register(b => b.bind(DatabaseService).to(DatabaseService).asSingleton());
 
-        builder.register((b) =>
+        builder.register(b =>
             b
                 .bind(UserService)
-                .toFactory((c) => {
+                .toFactory(c => {
                     const db = c.resolve(DatabaseService);
                     return new UserService();
                 })
