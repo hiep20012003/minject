@@ -73,4 +73,19 @@ describe('BindingBuilder', () => {
         const result = await binding.factory.create({});
         expect(result).toBe('factory-value');
     });
+
+    it('should handle dependsOn correctly', () => {
+        const token = Token.for<string>('test');
+        const dep1 = Token.for<number>('dep1');
+        class Dep2 {}
+
+        const builder = new BindingBuilder<string, any>();
+        builder.bind(token).toValue('value').dependsOn([dep1, Dep2, 'dep3']);
+
+        const binding = builder.build();
+        expect(binding.deps).toHaveLength(3);
+        expect(binding.deps[0]).toBe(dep1);
+        expect(binding.deps[1]).toBe(Token.fromClass(Dep2));
+        expect(binding.deps[2].description).toBe('dep3');
+    });
 });

@@ -11,6 +11,7 @@ export class Binding<T, K> {
     constructor(
         public readonly key: Token<T>,
         public readonly lifetime: Lifetime,
-        public readonly factory: Factory<T, K>
+        public readonly factory: Factory<T, K>,
+        public readonly deps: Token<unknown>[] = []
     ) {}
 }

@@ -9,6 +9,7 @@ export class BindingBuilder<T, K> implements IBindingBuilder<T, K> {
     private _key!: Token<T>;
     private _lifetime!: Lifetime;
     private _factory!: Factory<T, K>;
+    private _dependencies: Token<unknown>[] = [];
 
     public bind(key: Key<T>): IBindingBuilder<T, K> {
         if (key instanceof Token) {
@@ -36,6 +37,19 @@ export class BindingBuilder<T, K> implements IBindingBuilder<T, K> {
         return this;
     }
 
+    public dependsOn(keys: Key<unknown>[]): IBindingBuilder<T, K> {
+        this._dependencies = keys.map(key => {
+            if (key instanceof Token) {
+                return key;
+            } else if (typeof key === 'function') {
+                return Token.fromClass(key);
+            } else {
+                return Token.for(key);
+            }
+        });
+        return this;
+    }
+
     public asSingleton(): IBindingBuilder<T, K> {
         this._lifetime = Lifetime.Singleton;
         return this;
@@ -54,7 +68,7 @@ export class BindingBuilder<T, K> implements IBindingBuilder<T, K> {
     public build(): Binding<T, K> {
         this._validate();
 
-        return new Binding<T, K>(this._key, this._lifetime, this._factory);
+        return new Binding<T, K>(this._key, this._lifetime, this._factory, this._dependencies);
     }
 
     private _validate(): void {

@@ -14,9 +14,13 @@ export class Token<T> {
     }
 
     private static classCache = new WeakMap<Function, Token<unknown>>();
+    private static stringCache = new Map<string, Token<unknown>>();
 
     static for<T>(description: string): Token<T> {
-        return new Token<T>(description);
+        if (!Token.stringCache.has(description)) {
+            Token.stringCache.set(description, new Token<T>(description));
+        }
+        return Token.stringCache.get(description) as Token<T>;
     }
 
     static fromClass<T>(ctor: Constructor<T>): Token<T> {

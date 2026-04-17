@@ -36,11 +36,10 @@ describe('Token', () => {
         expect(tokenA).not.toBe(tokenB);
     });
 
-    it('should create unique tokens for different calls to Token.for with same description', () => {
+    it('should create same token for same description', () => {
         const token1 = Token.for('desc1');
         const token2 = Token.for('desc1');
 
-        expect(token1).not.toBe(token2);
-        expect(token1.identifier).not.toBe(token2.identifier);
+        expect(token1).toBe(token2);
     });
 });
